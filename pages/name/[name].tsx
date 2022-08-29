@@ -9,6 +9,7 @@ import { Layout } from '../../components/layouts'
 import { PokemonInfo } from '../../interfaces'
 import { localFavorites, getPokemonData } from '../../utils'
 import { PokemonListResponse } from '../../interfaces/pokemon-list';
+import { Ability } from '../../interfaces/pokemon-info';
 
 interface Props {
   pokemon: PokemonInfo 
@@ -51,8 +52,8 @@ const NamePage: NextPage<Props> = (props) => {
           </Grid>
           <Grid xs={ 12 } sm={ 8 }>
             <Card>
-              <Card.Header css={{ display: 'flex', justifyContent: 'space-between'}}>
-                <Text h1 transform='capitalize'>{ pokemon.name }</Text>
+              <Card.Header css={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap'}}>
+                <Text h1 transform='capitalize'>{ pokemon.name } - tipos: {pokemon.types && pokemon.types.map(type => `${type.type.name} `)}</Text>
                 <Button color="gradient" ghost={ !isFavorite } onClick={ onToggleFavorito }>
                   { !isFavorite ? 'Guardar en favoritos' : 'Favorito'}
                 </Button>
@@ -68,6 +69,45 @@ const NamePage: NextPage<Props> = (props) => {
               </Card.Body>
             </Card>
           </Grid>
+          { pokemon.abilities &&
+            <Grid xs={12} md={6}>
+                    <Card>
+                        <Card.Header>
+                            <Text h2>Abilities</Text>
+                        </Card.Header>
+                        <Card.Body>
+                            {
+                                pokemon.abilities.length > 0 && pokemon.abilities.map((ability, id) => (
+                                    <Text key={ability.ability.name}>#{id + 1} - {ability.ability.name}</Text>
+                                ))
+                            }
+                        </Card.Body>
+                    </Card>
+            </Grid>
+          }
+          { pokemon.moves &&
+            <Grid xs={12} md={6}>
+                    <Card>
+                        <Card.Header>
+                            <Text h2>Moves</Text>
+                        </Card.Header>
+                        <Card.Body>
+                            {
+                                pokemon.moves.length > 0 && pokemon.moves.map((move, id) => (
+                                    <>
+                                        <Text key={move.move.name} transform="capitalize">#{id + 1} - {move.move.name}</Text>
+                                        <ul>
+                                            {move.version_group_details.map((detail, id) => (
+                                                <li key={id} >{detail.level_learned_at === 0 ? 'Se aprende ' :`Se aprende al nivel: ${detail.level_learned_at}`} por {detail.move_learn_method.name} en Pokemon {detail.version_group.name}</li>
+                                            ))}
+                                        </ul>
+                                    </>
+                                ))
+                            }
+                        </Card.Body>
+                    </Card>
+            </Grid>
+          }
         </Grid.Container>
       </Layout>
     )

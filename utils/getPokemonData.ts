@@ -7,7 +7,10 @@ export const getPokemonData = async (str: string) => {
     const pokemon = {
         id: data.id,
         name: data.name,
-        sprites: data.sprites
+        sprites: data.sprites,
+        abilities: data.abilities,
+        moves: data.moves,
+        types: data.types
     }
 
     return pokemon; 
