@@ -9,8 +9,11 @@ import { Layout } from '../../components/layouts'
 import { PokemonInfo } from '../../interfaces'
 import { localFavorites, getPokemonData } from '../../utils'
 import { PokemonListResponse } from '../../interfaces/pokemon-list';
-import { Ability } from '../../interfaces/pokemon-info';
 
+interface RedirectData {
+    destination: string,
+    permanent: boolean
+}
 interface Props {
   pokemon: PokemonInfo 
 }
@@ -124,18 +127,30 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
     paths: pokemon1054.map( name => ({
       params: { name }
     })),
-    fallback: false
+    fallback: 'blocking'
   }
 }
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const { params } = ctx;
   const { name } = params as { name: string };
+  const pokemon = await getPokemonData(name);
+
+  if( !pokemon ) {
+    return {
+        redirect: {
+            destination: '/',
+            permanent: false
+        }
+      
+    }
+  }
   
   return {
     props: {
-      pokemon: await getPokemonData(name)
-    }
+      pokemon
+    },
+    revalidate: 86400 //esto se hace para ISR Icremantal Static Regenaration cada 24h
   }
 }
 
